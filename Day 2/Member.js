@@ -16,6 +16,12 @@ const members = [
         name: 'Bob Marley',
         email: 'bob@gmail.com',
         status: 'active'
+    },
+    {
+        id: 4, 
+        name: 'Job',
+        email: 'job@gmail.com',
+        status: 'inactive'
     }
 ]
 
