@@ -12,7 +12,7 @@ const courses = [
       
     },
     {
-        iid: 3, 
+        id: 3, 
         course_name: 'Introduction to Programming',
         course_code: 'CEF207',
       
