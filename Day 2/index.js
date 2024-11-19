@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const router = require('./routes/api/members')
+const router = require('./routes/api/courses')
 
 // const logger = require('./middleware/logger')
 
@@ -16,9 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}))
 
 // set static folder
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/members', router)
+app.use('/api/courses', router)
 
 app.listen(Port, () => {
     console.log(`App listening  on port ${Port}`)
