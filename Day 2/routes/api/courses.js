@@ -62,12 +62,16 @@ router.put('/:id', (req, res) => {
 
 })
 //Delete Course
-router.delete('/id', (req, res) =>{
+router.delete('/:id', (req, res) =>{
     const found = courses.some(course => course.id === parseInt(req.params.id))
 
     if (found){
         res.json({msg : 'Course Deleted', courses: courses.filter(course => course.id !== parseInt(req.params.id))})
     }
+    else {
+        res.status(400).json({message : `No course with the id of ${req.params.id}`})
+    }
+
 })
 
 module.exports = router;
