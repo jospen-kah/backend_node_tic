@@ -1,10 +1,7 @@
-import express from 'express';
+const express = require('express');
 
-import dotenv from "dotenv"
-import mongoose from "mongoose";
-
-
-
+  const dotenv =  require("dotenv");
+const mongoose =  require("mongoose");
 
 const app = express();
 dotenv.config();
@@ -22,16 +19,16 @@ const courses = require('./Courses')
 
 
 const Port = process.env.PORT || 3000;
-const MONGOURL = process.env.MONGO_URL;
+const MONGOURL = process.env.MONGO_URI;
 
 mongoose
-.connect(MONGOURL)
-.then( () => {
-    console.log("Database connected Successfully");
-    app.listen(Port, () => {
-        console.log(`App listening  on port ${Port}`)
-    })
-})
+.connect(process.env.MONGO_URI)
+.then(() => {
+    console.log('Connected to MongoDB!');
+  }).catch((error) => {
+    console.error('Error connecting to MongoDB:', error.message);
+  });
+
 
 // Use .engine
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' })); 

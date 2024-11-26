@@ -2,10 +2,10 @@
   "name": "day-2",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
+ 
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node index.cjs",
+    "dev": "nodemon index.cjs"
   },
   "keywords": [],
   "author": "",
