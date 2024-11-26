@@ -1,9 +1,20 @@
-const express = require('express');
+import express from 'express';
+
+import dotenv from "dotenv"
+import mongoose from "mongoose";
+
+
+
+
 const app = express();
+dotenv.config();
+
 const exphbs = require('express-handlebars');
 const router = require('./routes/api/courses');
 const path = require('path');
 const courses = require('./Courses')
+
+
 // const logger = require('./middleware/logger')
 
 // // set static folder
@@ -11,6 +22,16 @@ const courses = require('./Courses')
 
 
 const Port = process.env.PORT || 3000;
+const MONGOURL = process.env.MONGO_URL;
+
+mongoose
+.connect(MONGOURL)
+.then( () => {
+    console.log("Database connected Successfully");
+    app.listen(Port, () => {
+        console.log(`App listening  on port ${Port}`)
+    })
+})
 
 // Use .engine
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' })); 
@@ -29,6 +50,3 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/courses', router)
 
-app.listen(Port, () => {
-    console.log(`App listening  on port ${Port}`)
-})

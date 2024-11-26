@@ -1,4 +1,4 @@
-const express = require('express')
+import express from 'express';
 const uuid = require('uuid')
 
 const courses = require('../../Courses')
