@@ -1,100 +1,109 @@
-const express = require('express')
-const uuid = require('uuid')
-const dotenv = require("dotenv");
+const express = require('express');
 const mongoose = require("mongoose");
-// const courses = require('../../Courses')
 
 const router = express.Router();
 
-
-
-
-
-//retreive data from mongodb
+// Define course schema and model
 const courseSchema = new mongoose.Schema({
-    id: Number,
-    course_name: String,
-    course_code: String,
-})
-
-//create model
-const courseModel = mongoose.model("courses", courseSchema)
-
-//get courses
-try{
-router.get('/', async(req, res) => {
-    const courseData = await courseModel.find()
-    res.json(courseData);
+    course_id: { type: Number, required: true, unique: true },  // Unique numeric id
+    course_name: { type: String},
+    course_code: { String}
 });
-}
-catch(error){
-    console.error('Error retrieving courses:', error);
-    res.status(500).json({ message: 'Internal server error' });
-}
 
+// Create course model
+const courseModel = mongoose.model("courses", courseSchema);
 
-// Get Single Member
-router.get('/:id', (req, res) => {
-    const found = courses.some(course => course.id === parseInt(req.params.id));
-    if (found) {
-        res.json(courses.filter(course => course.id === parseInt(req.params.id)))
+// Get all courses
+router.get('/', async (req, res) => {
+    try {
+        const courseData = await courseModel.find();
+        res.json(courseData);
+    } catch (error) {
+        console.error('Error retrieving courses:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
+});
 
-    else {
-        res.status(400).json({ message: `No course with the id of ${req.params.id}` })
+// Get a single course by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.id);
+        const foundCourse = await courseModel.findOne({ course_id: courseId });
+        
+        if (foundCourse) {
+            res.json(foundCourse);
+        } else {
+            res.status(404).json({ message: `No course with the id of ${courseId}` });
+        }
+    } catch (error) {
+        console.error('Error retrieving course:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
+});
 
-})
-
-
-//Post Courses
-router.post('/', (req, res) => {
-    const { course_name, course_code } = req.body
-    if (!course_name || !course_code) {
-        res.status(400).json({ message: 'Fields required ' })
+// Post a new course
+router.post('/', async (req, res) => {
+    const { course_id, course_name, course_code  } = req.body;
+    
+    if (!course_name || !course_code || !course_id) {
+        return res.status(400).json({ message: 'Fields  id, course_name, course_code, and are required.' });
     }
-    const newCourse = {
-        id: uuid.v4(),
-        course_name,
-        course_code
-    }
-
-    // courses.push(newCourse)
-    //    res.json(courses)
-    res.redirect('/')
-})
-
-//Update Course
-router.put('/:id', (req, res) => {
-    const found = courses.some(course => course.id === parseInt(req.params.id));
-    if (found) {
-        const upDCourse = req.body;
-        courses.forEach(course => {
-            if (course.id === parseInt(req.params.id)) {
-                course.course_name = upDCourse.course_name ? upDCourse.course_name : course.course_name;
-                course.course_code = upDCourse.course_code ? upDCourse.course_code : course.course_code;
-
-                res.json({ msg: " Course Updated", course })
-            };
+    
+    try {
+        // Create a new course document and save it
+        const newCourse = new courseModel({
+            course_name,
+            course_code,
+            course_id
         });
-    }
 
-    else {
-        res.status(400).json({ message: `No course with the id of ${req.params.id}` })
+        await newCourse.save();  // Save to the MongoDB
+        res.status(201).json(newCourse);  // Respond with the newly created course
+    } catch (error) {
+        console.error('Error creating course:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
+});
 
-})
-//Delete Course
-router.delete('/:id', (req, res) => {
-    const found = courses.some(course => course.id === parseInt(req.params.id))
-
-    if (found) {
-        res.json({ msg: 'Course Deleted', courses: courses.filter(course => course.id !== parseInt(req.params.id)) })
+// Update an existing course
+router.put('/:id', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.id);
+        const updatedCourseData = req.body;
+        
+        const updatedCourse = await courseModel.findOneAndUpdate(
+            { course_id: courseId },
+            updatedCourseData,
+            { new: true }  // Return the updated document
+        );
+        
+        if (updatedCourse) {
+            res.json({ message: 'Course updated successfully', updatedCourse });
+        } else {
+            res.status(404).json({ message: `No course found with id ${courseId}` });
+        }
+    } catch (error) {
+        console.error('Error updating course:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-    else {
-        res.status(400).json({ message: `No course with the id of ${req.params.id}` })
-    }
+});
 
-})
+// Delete a course
+router.delete('/:id', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.id);
+        
+        const deletedCourse = await courseModel.findOneAndDelete({ course_id: courseId });
+        
+        if (deletedCourse) {
+            res.json({ message: 'Course deleted successfully', deletedCourse });
+        } else {
+            res.status(404).json({ message: `No course found with id ${courseId}` });
+        }
+    } catch (error) {
+        console.error('Error deleting course:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 module.exports = router;
