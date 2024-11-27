@@ -1,13 +1,36 @@
 const express = require('express')
 const uuid = require('uuid')
-
-const courses = require('../../Courses')
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+// const courses = require('../../Courses')
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.json(courses);
+
+
+
+
+//retreive data from mongodb
+const courseSchema = new mongoose.Schema({
+    id: Number,
+    course_name: String,
+    course_code: String,
+})
+
+//create model
+const courseModel = mongoose.model("courses", courseSchema)
+
+//get courses
+try{
+router.get('/', async(req, res) => {
+    const courseData = await courseModel.find()
+    res.json(courseData);
 });
+}
+catch(error){
+    console.error('Error retrieving courses:', error);
+    res.status(500).json({ message: 'Internal server error' });
+}
 
 
 // Get Single Member

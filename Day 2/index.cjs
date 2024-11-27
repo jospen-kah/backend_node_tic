@@ -1,15 +1,16 @@
-const express = require('express');
-
-  const dotenv =  require("dotenv");
-const mongoose =  require("mongoose");
+const express = require('express')
 
 const app = express();
-dotenv.config();
+
 
 const exphbs = require('express-handlebars');
-const router = require('./routes/api/courses');
+const router = require('./routes/api/courses.js');
 const path = require('path');
 const courses = require('./Courses')
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+
+dotenv.config();
 
 
 // const logger = require('./middleware/logger')
@@ -19,31 +20,35 @@ const courses = require('./Courses')
 
 
 const Port = process.env.PORT || 3000;
+
 const MONGOURL = process.env.MONGO_URI;
 
 mongoose
-.connect(process.env.MONGO_URI)
-.then(() => {
-    console.log('Connected to MongoDB!');
-  }).catch((error) => {
-    console.error('Error connecting to MongoDB:', error.message);
-  });
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log('Connected to MongoDB!');
+    }).catch((error) => {
+        console.error('Error connecting to MongoDB:', error.message);
+    });
 
-
-// Use .engine
-app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' })); 
+// Use .engine to connect to frontend
+app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
-app.get('/' , (req, res) => res.render('index', {
+app.get('/', (req, res) => res.render('index', {
     title: 'My Courses App',
     courses
 }))
 
 //Body Parser Middleware
 app.use(express.json());
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({ extended: false }))
 
 // set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/courses', router)
 
+
+app.listen( Port, ()=>{
+    console.log(`Connected on port ${Port}`)
+})
