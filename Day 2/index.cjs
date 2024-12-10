@@ -6,17 +6,23 @@ const app = express();
 const exphbs = require('express-handlebars');
 const router = require('./routes/api/courses.js');
 const path = require('path');
-const courses = require('./Courses')
+const courses = require('./Courses');
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const jwt = require('jsonwebtoken');
 
 dotenv.config();
+
+const authRoutes = require("./auth/auth.js");
+
+// Add routes
+app.use("/auth", authRoutes);
 
 
 // const logger = require('./middleware/logger')
 
 // // set static folder
-// app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 const Port = process.env.PORT || 3000;
@@ -24,7 +30,7 @@ const Port = process.env.PORT || 3000;
 const MONGOURL = process.env.MONGO_URI;
 
 mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(MONGOURL)
     .then(() => {
         console.log('Connected to MongoDB!');
     }).catch((error) => {
@@ -47,6 +53,12 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/courses', router)
+
+app.post('/test', (req,res) => {
+    const data = req.body
+    console.log("data her", data)
+    res.send("testd")
+})
 
 
 app.listen( Port, ()=>{

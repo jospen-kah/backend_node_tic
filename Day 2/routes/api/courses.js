@@ -1,22 +1,34 @@
 const express = require('express');
+const auth = require("../../auth/middleware/auth")
 const mongoose = require("mongoose");
 
 const router = express.Router();
 
+
 // Define course schema and model
 const courseSchema = new mongoose.Schema({
-    course_id: { type: Number, required: true, unique: true },  // Unique numeric id
     course_name: { type: String},
-    course_code: { String}
+    course_code: { type: String}
 });
+
+
 
 // Create course model
 const courseModel = mongoose.model("courses", courseSchema);
+
+
+
+
+
+
+
+
 
 // Get all courses
 router.get('/', async (req, res) => {
     try {
         const courseData = await courseModel.find();
+        res.json({ message: "Welcome to the protected courses route!" });
         res.json(courseData);
     } catch (error) {
         console.error('Error retrieving courses:', error);
@@ -27,11 +39,13 @@ router.get('/', async (req, res) => {
 // Get a single course by ID
 router.get('/:id', async (req, res) => {
     try {
-        const courseId = parseInt(req.params.id);
-        const foundCourse = await courseModel.findOne({ course_id: courseId });
+        const courseId = req.params.id
+        // const foundCourse = await courseModel.findOne({ _id: courseId });
+
+        const course = await courseModel.findById(courseId)
         
-        if (foundCourse) {
-            res.json(foundCourse);
+        if (course) {
+            res.json(course);
         } else {
             res.status(404).json({ message: `No course with the id of ${courseId}` });
         }
@@ -43,10 +57,10 @@ router.get('/:id', async (req, res) => {
 
 // Post a new course
 router.post('/', async (req, res) => {
-    const { course_id, course_name, course_code  } = req.body;
+    const { course_name, course_code  } = req.body;
     
-    if (!course_name || !course_code || !course_id) {
-        return res.status(400).json({ message: 'Fields  id, course_name, course_code, and are required.' });
+    if (!course_name || !course_code ) {
+        return res.status(400).json({ message: ' course_name, course_code, and are required.' });
     }
     
     try {
@@ -54,7 +68,7 @@ router.post('/', async (req, res) => {
         const newCourse = new courseModel({
             course_name,
             course_code,
-            course_id
+           
         });
 
         await newCourse.save();  // Save to the MongoDB
@@ -68,7 +82,7 @@ router.post('/', async (req, res) => {
 // Update an existing course
 router.put('/:id', async (req, res) => {
     try {
-        const courseId = parseInt(req.params.id);
+        const courseId = req.params.id;
         const updatedCourseData = req.body;
         
         const updatedCourse = await courseModel.findOneAndUpdate(
@@ -91,7 +105,7 @@ router.put('/:id', async (req, res) => {
 // Delete a course
 router.delete('/:id', async (req, res) => {
     try {
-        const courseId = parseInt(req.params.id);
+        const courseId = req.params.id;
         
         const deletedCourse = await courseModel.findOneAndDelete({ course_id: courseId });
         
@@ -100,7 +114,8 @@ router.delete('/:id', async (req, res) => {
         } else {
             res.status(404).json({ message: `No course found with id ${courseId}` });
         }
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error deleting course:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
