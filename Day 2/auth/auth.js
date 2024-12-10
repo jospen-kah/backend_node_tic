@@ -6,6 +6,8 @@ const User = require("./usersSchema");
 const authRouter = express.Router();
 authRouter.use(express.json())
 
+const key = process.env.KEY
+
 authRouter.post("/register", async(req, res) =>
 {
     const data = req.body
@@ -50,11 +52,16 @@ authRouter.post("/login", async(req, res) => {
 
         const token = jwt.sign(
             {id: user._id, email: user.email},
-            process.env.JWT_SECRET,
+            key,
             {expiresIn: "1h"}
+            
         );
+        console.log(key, token)
         
-        res.status(200).json({message: "Login Successful"});
+        res.status(200).json({
+            message: "Login Successful",
+            token,
+        });
 
     }
     catch(err){

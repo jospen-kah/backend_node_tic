@@ -54,12 +54,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/courses', router)
 
-app.post('/test', (req,res) => {
-    const data = req.body
-    console.log("data her", data)
-    res.send("testd")
-})
-
 
 app.listen( Port, ()=>{
     console.log(`Connected on port ${Port}`)
