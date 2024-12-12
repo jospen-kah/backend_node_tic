@@ -2,7 +2,8 @@ const express = require('express')
 
 const app = express();
 
-
+const swaggerUI = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc")
 const exphbs = require('express-handlebars');
 const router = require('./routes/api/courses.js');
 const path = require('path');
@@ -12,21 +13,8 @@ const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
 
 dotenv.config();
-
 const authRoutes = require("./auth/auth.js");
-
-// Add routes
-app.use("/auth", authRoutes);
-
-
-// const logger = require('./middleware/logger')
-
-// // set static folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-
 const Port = process.env.PORT || 3000;
-
 const MONGOURL = process.env.MONGO_URI;
 
 mongoose
@@ -38,19 +26,43 @@ mongoose
     });
 
 // Use .engine to connect to frontend
-app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
-app.set('view engine', 'handlebars');
-app.get('/', (req, res) => res.render('index', {
-    title: 'My Courses App',
-    courses
-}))
+// app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
+// app.set('view engine', 'handlebars');
+// app.get('/', (req, res) => res.render('index', {
+//     title: 'My Courses App',
+//     courses
+// }))
 
+const options = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title:"Library API",
+            version: "1.0.0",
+            description: " A simple Express Library API"
+        },
+        servers: [
+            {
+                url: "http://localhost:3000"
+            }
+        ],
+    },
+        apis: ["./routes/*.js", "./auth/*.js"]
+
+
+}
+const specs = swaggerJsDoc(options)
+
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs))
 //Body Parser Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 
 // set static folder
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+// Add routes
+
+app.use("/auth", authRoutes);
 
 app.use('/api/courses', router)
 
