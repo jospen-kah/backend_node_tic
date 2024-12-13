@@ -149,42 +149,42 @@ const key = process.env.KEY
  *     responses: 
  *        200:
  *          description: Update course description by Id
- *          contents:  
+ *          contentj:  
  *             application/json:
  *               schema:
  *                 $ref: '#/components/schemas/Courses'
  *        404:
  *          description: The course was not found
  *        500:
- *          description: An internal server error occured
+ *          description: An internal server error occurred
  */
 
 /**
  * @swagger
- *  /api/courses/{id}:
+ * /api/courses/{id}:
  *   delete:
- *     summary: Delete the course by Id
+ *     summary: Delete the course by ID
  *     tags: [Courses]
  *     parameters:
- *         - in: path
- *           name: id
- *           schema: 
- *              type: string
- *           required: true
- *           description: The Course Id
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the course to delete
  *     responses:
- *        200:
- *          description: The Course is deleted by Id
- *          content: 
- *            application/json
- *          schema:
- *              $ref: '#/components/schema/Courses'
- *        404:
- *          description: The course was not found
- *        500:
- *          description: An internal server occoured
- *              
+ *       200:
+ *         description: The course was deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Courses'
+ *       404:
+ *         description: The course was not found
+ *       500:
+ *         description: An internal server error occurred
  */
+
 
   
 authRouter.post("/register", async (req, res) =>{

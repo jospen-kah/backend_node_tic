@@ -1,7 +1,7 @@
 const express = require('express');
 // const auth = require("../../auth/middleware/auth")
 const courses = require("./coursesSchema");
-
+const mongoose = require("mongoose");
 const router = express.Router();
 
 
@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const courseId = req.params.id
-        // const foundCourse = await courseModel.findOne({ _id: courseId });
+       
 
         const course = await courses.findById(courseId)
         
@@ -65,9 +65,14 @@ router.put('/:id', async (req, res) => {
     try {
         const courseId = req.params.id;
         const updatedCourseData = req.body;
-        
-        const updatedCourse = await courses.findOneAndUpdate(
-            { course_id: courseId },
+
+         // Validate courseId as an ObjectId
+         if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({ message: 'Invalid course ID format' });
+        }
+
+        const updatedCourse = await courses.findByIdAndUpdate(
+            new mongoose.Types.ObjectId(courseId),
             updatedCourseData,
             { new: true }  // Return the updated document
         );
@@ -88,7 +93,12 @@ router.delete('/:id', async (req, res) => {
     try {
         const courseId = req.params.id;
         
-        const deletedCourse = await courses.findOneAndDelete({ course_id: courseId });
+         // Validate courseId as an ObjectId
+         if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({ message: 'Invalid course ID format' });
+        }
+
+        const deletedCourse = await courses.findByIdAndDelete(new mongoose.Types.ObjectId(courseId));
         
         if (deletedCourse) {
             res.status(200).json({ message: 'Course deleted successfully', deletedCourse });
