@@ -65,6 +65,13 @@ const key = process.env.KEY
 
 /**
  * @swagger
+ * tags: 
+ *   name: Users
+ *   description: The User Management API
+ */
+
+/**
+ * @swagger
  * /api/courses:
  *  get:
  *    summary: Returns the list of all the Courses
@@ -186,7 +193,35 @@ const key = process.env.KEY
  */
 
 
-  
+
+
+
+ /**
+  * @swagger
+  * /auth/register/:
+  *  post:
+  *     summary: Create a new User
+  *     tags: [Users]
+  *     requestBody:
+  *         required: true
+  *         content:
+  *            application/json:
+  *               schema:
+  *                 $ref: '#/components/schemas/Auth'
+  *     responses: 
+  *        200:
+  *          description: The User successfully logged in with the id
+  *          content: 
+  *            application/json:
+  *                 schema:
+  *                    $ref: '#/components/schemas/Auth'
+  *        400:
+  *          description: The User inputted the wrong credentials
+  *        404:
+  *          description: The user with the credential was not found
+  *        500:
+  *          description: The was an internal server error that occurred
+  */ 
 authRouter.post("/register", async (req, res) =>{
     const data = req.body
     try {
@@ -211,7 +246,32 @@ authRouter.post("/register", async (req, res) =>{
     }
 })
 
-
+/**
+ * @swagger
+ * /auth/login/:
+ *   post:
+ *    summary: Login a User
+ *    tags: [Users]
+ *    requestBody:
+ *        required: true
+ *        content: 
+ *           application/json: 
+ *              schema:
+ *                $ref: '#/components/schemas/Auth'
+ *    responses: 
+ *        200:
+ *          description: The existing user successfully accessed back his/her account
+ *          content: 
+ *             application/json:
+ *                 schema:
+ *                    $ref: '#/components/schemas/Auth'
+ *        400:
+ *          description: The User credentials do not match
+ *        404:
+ *          description: The User trying to login was not found
+ *        500:
+ *          description: The was an internal server error
+ */
 authRouter.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
