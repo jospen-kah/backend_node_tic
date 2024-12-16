@@ -11,6 +11,7 @@ const courses = require('./Courses');
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
+const file = require('./uploads/file')
 
 dotenv.config();
 const authRoutes = require("./auth/auth.js");
@@ -65,6 +66,8 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/auth", authRoutes);
 
 app.use('/api/courses', router)
+
+app.use('/file', file)
 
 
 app.listen( Port, ()=>{
