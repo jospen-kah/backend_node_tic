@@ -1,4 +1,5 @@
  const User = require('../auth/usersSchema')
+ const bcrypt = require("bcrypt");
  
  async function authRegisterController(req, res){
     const data = req.body
@@ -17,7 +18,7 @@
         const newUser = User.create({ username, email, password: hashedPassword });
         // await newUser.save();
 
-        res.status(201).json({ message: "User registered successfully!", data: JSON.stringify(newUser) });
+        res.status(201).json({ message: "User registered successfully!"});
     }
     catch (err) {
         res.status(500).json({ mssage: "Something went wrong", error: err.message })
