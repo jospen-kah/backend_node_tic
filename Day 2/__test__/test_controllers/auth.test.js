@@ -76,3 +76,27 @@ it("should send a status code of 201 when a user is created", async () => {
   message: "User registered successfully!",
  });
 });
+
+it('should send a status code 500 when there us an internal server error', async() =>{
+  User.findOne.mockResolvedValueOnce(null);
+  User.create.mockImplementationOnce(() => {
+            throw new Error("Database error");
+        });
+
+  const request = {
+    body: {},
+  };
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+
+  await authRegisterController(request, response);
+
+  expect(response.status).toHaveBeenCalledWith(500);
+  expect(response.json).toHaveBeenCalledWith({
+    message: "Something went wrong",
+    
+  });
+
+})
