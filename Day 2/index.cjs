@@ -12,6 +12,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
 const file = require('./uploads/file')
+const mails = require('./mails/mailer')
 
 dotenv.config();
 const authRoutes = require("./auth/auth.js");
@@ -68,6 +69,8 @@ app.use("/auth", authRoutes);
 app.use('/api/courses', router)
 
 app.use('/file', file)
+
+app.use('/message', mails)
 
 
 app.listen( Port, ()=>{
